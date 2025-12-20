@@ -1,0 +1,17 @@
+services:
+  app:
+    # build: . 
+    image: 879381241087.dkr.ecr.ap-south-1.amazonaws.com/studentportal:1.0
+    ports:
+      - "8000:8000"  # Changed from 5000 to 8000
+    networks:
+      - test_network 
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_RUN_PORT=8000
+      - DB_LINK=postgresql://myadmin:Admin123@student-portal.cvik8accw2tk.ap-south-1.rds.amazonaws.com:5432/postgres
+
+
+networks:
+  test_network:
+    driver: bridge

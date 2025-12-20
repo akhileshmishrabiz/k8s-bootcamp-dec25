@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: student-portal
+  namespace: student-portal
+  labels:
+    app: student-portal
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: student-portal
+  template:
+    metadata:
+      labels:
+        app: student-portal
+    spec:
+      containers:
+      - name: flask
+        image: 879381241087.dkr.ecr.ap-south-1.amazonaws.com/studentportal:2.0 
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DB_LINK
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: db_link
