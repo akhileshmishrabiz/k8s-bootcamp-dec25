@@ -17,4 +17,16 @@ EKS cluster build step
 - managed nodes confif 
 
 
-aws eks update-kubeconfig --region <region> --name <cluster-name>
+aws eks update-kubeconfig --region ap-south-1 --name demo-akhilesh
+
+
+kubectl port-forward -n student-portal service/student-portal 8111:8080 
+
+
+new image: 879381241087.dkr.ecr.ap-south-1.amazonaws.com studentportal:c6ca170049d679e4b6081bdcfd1536bf51904e0e
+
+kubectl set image deployment/student-portal -n student-portal flask=879381241087.dkr.ecr.ap-south-1.amazonaws.com/studentportal:c6ca170049d679e4b6081bdcfd1536bf51904e0e
+
+kubectl set image deployment/student-portal -n student-portal flask=nginx:latest
+
+kubectl rollout restart deployment/student-portal -n student-portal 

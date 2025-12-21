@@ -210,3 +210,11 @@ __marimo__/
 # aws cli 
 *.pkg
 env.md
+
+
+# terraform binaries
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform/*
+.terraform.lock.hcl
