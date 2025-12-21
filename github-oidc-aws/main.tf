@@ -36,7 +36,8 @@ resource "aws_iam_role" "github_actions_eks_build_role" {
         Action = "sts:AssumeRoleWithWebIdentity"
         Condition = {
           StringLike = {
-            "token.actions.githubusercontent.com:sub" : "repo:akhileshmishrabiz/k8s-bootcamp-dec25:main"
+            "token.actions.githubusercontent.com:sub" : "repo:akhileshmishrabiz/k8s-bootcamp-dec25:ref:refs/heads/main",
+            "token.actions.githubusercontent.com:aud" : "sts.amazonaws.com"
           }
         }
       }
