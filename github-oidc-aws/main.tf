@@ -8,11 +8,11 @@
 
 resource "aws_iam_openid_connect_provider" "github_actions" {
   url = "https://token.actions.githubusercontent.com"
-  
+
   client_id_list = [
     "sts.amazonaws.com"
   ]
-  
+
   thumbprint_list = [
     "6938fd4d98bab03faadb97b34396831e3780aea1"
   ]
@@ -24,7 +24,7 @@ resource "aws_iam_openid_connect_provider" "github_actions" {
 
 resource "aws_iam_role" "github_actions_eks_build_role" {
   name = "eks-github-actions-build-role"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -36,9 +36,7 @@ resource "aws_iam_role" "github_actions_eks_build_role" {
         Action = "sts:AssumeRoleWithWebIdentity"
         Condition = {
           StringLike = {
-            "token.actions.githubusercontent.com:sub" = [
-                "repo:akhileshmishrabiz/k8s-bootcamp-dec25:main"
-            ]
+            "token.actions.githubusercontent.com:sub" : "repo:akhileshmishrabiz/k8s-bootcamp-dec25:main"
           }
         }
       }
@@ -51,6 +49,6 @@ resource "aws_iam_role" "github_actions_eks_build_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "attach_ecr_policy" {
-    role       = aws_iam_role.github_actions_eks_build_role.name
-    policy_arn = aws_iam_policy.ecr_policy.arn
+  role       = aws_iam_role.github_actions_eks_build_role.name
+  policy_arn = aws_iam_policy.ecr_policy.arn
 }
