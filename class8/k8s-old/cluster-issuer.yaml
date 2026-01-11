@@ -1,0 +1,20 @@
+# cluster-issuer.yaml
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-dev
+spec:
+  acme:
+    # Let's Encrypt production API
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: akhileshmishra@akhileshmishra.tech # Replace with your email
+    privateKeySecretRef:
+      name: letsencrypt-dev-account-key
+    solvers:
+    - selector:
+        dnsZones:
+          - "akhileshmishra.tech"  # Replace with your domain
+      dns01:
+        route53:
+          region: ap-south-1  # Replace with your AWS region
+          hostedZoneID: Z031876418L4DSANPX6H2  # From Step 5

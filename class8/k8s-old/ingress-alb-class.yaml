@@ -1,0 +1,12 @@
+# IngressClass definition for AWS ALB Controller
+# This defines how the ingress controller should behave
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: alb
+  annotations:
+    # Set to false so it doesn't become the default ingress class
+    ingressclass.kubernetes.io/is-default-class: "false"
+spec:
+  # AWS Load Balancer Controller handles this ingress class
+  controller: ingress.k8s.aws/alb

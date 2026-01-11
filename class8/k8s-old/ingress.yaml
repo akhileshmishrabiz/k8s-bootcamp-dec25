@@ -1,0 +1,41 @@
+# Basic HTTP Ingress Configuration (No SSL)
+# This will create an Application Load Balancer for external access
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: 3-tier-app-ingress
+  namespace: 3-tier-app-eks
+  annotations:
+    # Create an internet-facing ALB (public access)
+    alb.ingress.kubernetes.io/scheme: "internet-facing"
+    # Use IP mode for better compatibility with Fargate and pod networking
+    alb.ingress.kubernetes.io/target-type: "ip"
+    # Health check path - ALB will check this endpoint for service health
+    alb.ingress.kubernetes.io/healthcheck-path: "/"
+    # Listen only on port 80 (HTTP) - no SSL in this configuration
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
+    
+spec:
+  # Use the ALB ingress class defined above
+  ingressClassName: alb
+  rules:
+  # Single subdomain rule - all traffic for app.akhileshmishra.tech
+  - host: "app.akhileshmishra.tech"  # Your app subdomain
+    http:
+      paths:
+      # Route API calls to backend service (must come first for priority)
+      - path: /api
+        pathType: Prefix  # Matches /api, /api/, /api/users, etc.
+        backend:
+          service:
+            name: backend
+            port:
+              number: 8000
+      # Route all other traffic to frontend
+      - path: /
+        pathType: Prefix  # Matches everything else (root, /login, /dashboard, etc.)
+        backend:
+          service:
+            name: frontend
+            port:
+              number: 80
