@@ -19,7 +19,6 @@ on:
 
 env:
   AWS_REGION: ap-south-1
-  backend_repo: devopsdozo-backend
   frontend_repo: devopsdozo-frontend
   IMAGE_TAG: ${{ github.sha }}
   PATH_TO_BUILD: ./class8
@@ -31,7 +30,7 @@ jobs:
       id-token: write
       contents: read
     env:
-      ECR_REPOSITORY: ${{ env.backend_repo }}
+      ECR_REPOSITORY: devopsdozo-backend
 
     steps:
       - name: Checkout code
@@ -69,7 +68,7 @@ jobs:
       id-token: write
       contents: read
     env:
-      ECR_REPOSITORY: ${{ env.frontend_repo }}
+      ECR_REPOSITORY: devopsdozo-frontend
 
     steps:
       - name: Checkout code
