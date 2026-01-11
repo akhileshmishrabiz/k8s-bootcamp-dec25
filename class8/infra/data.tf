@@ -18,3 +18,4 @@ data "aws_eks_cluster_auth" "cluster" {
 
 # vpc id, vpc cidr
 # data.aws_eks_cluster.eks.vpc_config[0]["vpc_id"]
+# data.aws_eks_cluster.eks.vpc_config[0]["security_group_ids"]

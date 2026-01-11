@@ -35,8 +35,7 @@ spec:
   # TLS configuration for certificate management
   tls:
   - hosts:
-    - "app.akhileshmishra.tech"  # Your app subdomain
-    secretName: example-com-tls  # Must match Certificate resource secretName (use wildcard cert)
+    - "devopsdozo.akhileshmishra.tech"  # Your app subdomain
   
   rules:
   # Single subdomain rule - all traffic for app.akhileshmishra.tech

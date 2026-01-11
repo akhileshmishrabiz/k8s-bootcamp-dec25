@@ -28,7 +28,8 @@ resource "aws_security_group" "rds" {
     protocol        = "tcp"
     from_port       = 5432
     to_port         = 5432
-    cidr_blocks     = ["0.0.0.0/0"]
+    # security_groups = data.aws_eks_cluster.eks.vpc_config[0]["security_group_ids"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
@@ -72,6 +73,12 @@ resource "aws_db_instance" "postgres" {
 }
 
 resource "random_password" "rds_password" {
+  length           = 10
+  special          = false
+  override_special = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+}
+
+resource "random_password" "backend_secret_key" {
   length           = 10
   special          = false
   override_special = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
