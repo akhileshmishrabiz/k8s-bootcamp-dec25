@@ -15,3 +15,15 @@
 -> ingress Terraform 
 -> automate ALB to dns mapping with Terraform
 -> automat th ACM ssl cert issue and https ingress
+
+
+
+
+Class 9 Agenda
+
+Terraform stuff
+- rds
+- config map for rds endpoint 
+- secrt for database url
+
+from menifsts

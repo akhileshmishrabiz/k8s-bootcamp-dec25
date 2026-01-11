@@ -1,0 +1,98 @@
+name: Class9-3tier Build
+
+on:
+  # push:
+  #   branches:
+  #     - main
+
+#   # run only if some file in 'src' folder was changed
+# - if: steps.changes.outputs.src == 'true'
+#   run: ...
+
+  push:
+    branches:
+      - main
+    paths:
+      - 'class8/**'
+
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ap-south-1
+  backend_repo: devopsdozo-backend
+  frontend_repo: devopsdozo-frontend
+  IMAGE_TAG: ${{ github.sha }}
+  PATH_TO_BUILD: ./class8
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::879381241087:role/eks-github-actions-build-role
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          echo "Building the Docker image... ${{ steps.login-ecr.outputs.registry }}"
+          cd ${{ env.PATH_TO_BUILD }}/backend
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+
+      - name: Push image to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+
+  frontend:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::879381241087:role/eks-github-actions-build-role
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          echo "Building the Docker image... ${{ steps.login-ecr.outputs.registry }}"
+          cd ${{ env.PATH_TO_BUILD }}/frontend
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+
+      - name: Push image to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
