@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo-app2
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/akhileshmishrabiz/k8s-bootcamp-dec25
+    path: class10/app2
+    targetRevision: HEAD
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
