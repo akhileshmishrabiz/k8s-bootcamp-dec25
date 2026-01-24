@@ -10,6 +10,7 @@ module "vpc" {
   public_subnets  = [var.subnet_cidr["public_subnets"][0], var.subnet_cidr["public_subnets"][1], var.subnet_cidr["public_subnets"][2]]
 
 
+
   # Yes, EKS nodes generally need a NAT gateway (or a public IP and an Internet Gateway) to 
   # join and operate within a private subnet
   # we also need NAT to allow pods get imange(private or public) from internet
