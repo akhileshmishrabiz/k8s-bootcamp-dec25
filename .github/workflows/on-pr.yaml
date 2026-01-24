@@ -30,7 +30,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: arn:aws:iam::879381241087:role/eks-github-actions-build-role
-          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          role-session-name: GitHub_to_AWS_via_OIDC_PR
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terraform
