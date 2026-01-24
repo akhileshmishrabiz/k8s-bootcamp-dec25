@@ -12,10 +12,6 @@ on:
         options:
           - dev
           - prod
-      infra_path:
-        description: 'EKS Cluster Name'
-        required: false
-        default: 'eks-proper-infra/infra'
       apply_or_delete:
         description: 'Apply or Delete'
         required: false
@@ -27,13 +23,15 @@ on:
 env:
   TF_VERSION: 1.8.1
   AWS_REGION: ap-south-1
-  environment: ${{ github.event.inputs.environment }}
-  infra_path: ${{ github.event.inputs.infra_path }}
+  infra_path: eks-proper-infra/infra
 
 jobs:
   infra-deploy:
     name: EKS Infra Deploy
-    runs-on: ubuntu-latest      
+    runs-on: ubuntu-latest   
+    permissions:
+      id-token: write
+      contents: read   
 
     steps:
       - name: Checkout Repo
@@ -43,7 +41,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: arn:aws:iam::879381241087:role/eks-github-actions-build-role
-          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          role-session-name: GitHub_to_AWS_OIDC_EKSDEP
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terraform
@@ -53,7 +51,7 @@ jobs:
 
       - name: Terraform Init
         working-directory: ${{ env.infra_path }}
-        run: terraform init -backend-config=vars/${{ env.environment }}.tfbackend
+        run: terraform init -backend-config=vars/${{ github.event.inputs.environment }}.tfbackend
 
       # - name: Terraform Apply
       #   working-directory: ${{ env.infra_path }}
@@ -62,9 +60,9 @@ jobs:
       - name: Terraform Apply
         if: ${{ github.event.inputs.apply_or_delete == 'apply' }}
         working-directory: ${{ env.infra_path }}
-        run: terraform apply -auto-approve -var-file=vars/${{ env.environment }}.tfvars
+        run: terraform apply -auto-approve -var-file=vars/${{ github.event.inputs.environment }}.tfvars
 
       - name: Terraform Destroy
         if: ${{ github.event.inputs.apply_or_delete == 'destroy' }}
         working-directory: ${{ env.infra_path }}
-        run: terraform destroy -auto-approve -var-file=vars/${{ env.environment }}.tfvars
+        run: terraform destroy -auto-approve -var-file=vars/${{ github.event.inputs.environment }}.tfvars
