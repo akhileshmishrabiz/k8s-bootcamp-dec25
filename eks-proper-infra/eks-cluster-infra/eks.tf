@@ -3,7 +3,7 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "21.5.0"
 
-  name               = "${var.environment}-${var.prefix}-ekscluster"
+  name               = "${var.environment}-${var.prefix}-${var.eks_cluster_name}"
   kubernetes_version = "1.33"
 
   addons = {

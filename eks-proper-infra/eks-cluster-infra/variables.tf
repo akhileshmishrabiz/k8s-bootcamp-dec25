@@ -43,7 +43,7 @@ variable "subnet_cidr" {
 
 variable "eks_cluster_name" {
   type = string
-  default = "eksbootcamp"
+  default = "ekscluster"
 }
 
 variable "prefix" {
