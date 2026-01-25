@@ -3,15 +3,13 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"math/rand"
-	"recommendation/data"  // replace with your actual project name
-	"time"
+	"recommendation/data"
 )
 
 func GetOrigamiOfTheDay(c *gin.Context) {
 	origamis := data.GetDailyOrigami()
-	rand.Seed(time.Now().Unix()) // initialize global pseudo random generator
 	selectedOrigami := origamis[rand.Intn(len(origamis))] // get a random origami
-	
+
 	c.JSON(200, selectedOrigami)
 }
 

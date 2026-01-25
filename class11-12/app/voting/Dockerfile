@@ -11,7 +11,7 @@ COPY . .
 RUN mvn package
 
 # Stage 2: Create a smaller image for production
-FROM openjdk:19-jdk-alpine3.16
+FROM openjdk:19-ea-19-jdk-slim
 
 # Set the working directory inside the container
 WORKDIR /app
