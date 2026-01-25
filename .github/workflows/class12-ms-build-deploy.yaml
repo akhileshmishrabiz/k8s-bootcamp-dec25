@@ -15,7 +15,9 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      id-token: write
+      contents: read
+
     strategy:
       fail-fast: false
       matrix:
