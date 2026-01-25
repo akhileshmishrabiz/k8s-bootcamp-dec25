@@ -1,21 +1,21 @@
 # 
 resource "aws_ecr_repository" "images" {
-    for_each = local.services
+  for_each = local.services
 
-    name                 = "${var.environment}-${var.app_name}-${each.key}"
-    image_tag_mutability = "MUTABLE"
+  name                 = "${var.environment}-${var.app_name}-${each.key}"
+  image_tag_mutability = "MUTABLE"
 
-    image_scanning_configuration {
-        scan_on_push = true
-    }
+  image_scanning_configuration {
+    scan_on_push = true
+  }
 
-    tags = {
-        Name = each.key
-    }
+  tags = {
+    Name = each.key
+  }
 }
 
 
-# [id=prod-craftica-frontend]
-# [id=prod-craftica-catalogue]
-# [id=prod-craftica-voting]
-# [id=prod-craftica-recco]
+# [id=879381241087.dkr.ecr.ap-south-1.amazonaws.com/prod-craftica-frontend]
+# [id=879381241087.dkr.ecr.ap-south-1.amazonaws.com/prod-craftica-catalogue]
+# [id=879381241087.dkr.ecr.ap-south-1.amazonaws.com/prod-craftica-voting]
+# [id=879381241087.dkr.ecr.ap-south-1.amazonaws.com/prod-craftica-recco]
