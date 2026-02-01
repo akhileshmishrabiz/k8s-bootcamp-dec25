@@ -80,20 +80,3 @@ spec:
       - name: config-volume
         configMap:
           name: voting-config
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: voting
-  namespace: craftista
-  labels:
-    app: voting
-spec:
-  type: ClusterIP
-  selector:
-    app: voting
-  ports:
-  - port: 8080
-    targetPort: 8080
-    protocol: TCP
-    name: http

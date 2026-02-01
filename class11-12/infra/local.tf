@@ -4,21 +4,25 @@ locals {
       name        = "frontend",
       port        = "80"
       target_port = "3000"
+      host        = "${var.environment}.${var.app_name}.${var.domain}"
     },
     {
       name        = "catalogue"
       port        = "5000"
       target_port = "5000"
+      host        = "catalogue.${var.environment}.${var.app_name}.${var.domain}"
     },
     {
       name        = "voting"
       port        = "8080"
       target_port = "8080"
+      host        = "voting.${var.environment}.${var.app_name}.${var.domain}"
     },
     {
       name        = "recco"
       port        = "8080"
       target_port = "8080"
+      host        = "recco.${var.environment}.${var.app_name}.${var.domain}"
     },
   ]
 

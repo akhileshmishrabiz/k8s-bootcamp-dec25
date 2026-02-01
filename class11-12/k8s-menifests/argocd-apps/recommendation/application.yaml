@@ -15,7 +15,7 @@ spec:
       include: '05-recommendation-deployment.yaml'
   destination:
     server: https://kubernetes.default.svc
-    namespace: craftista
+    namespace: craftica
   syncPolicy:
     automated:
       prune: true

@@ -88,20 +88,3 @@ spec:
       - name: db-secrets-volume
         secret:
           secretName: catalogue-db-secrets
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: catalogue
-  namespace: craftista
-  labels:
-    app: catalogue
-spec:
-  type: ClusterIP
-  selector:
-    app: catalogue
-  ports:
-  - port: 5000
-    targetPort: 5000
-    protocol: TCP
-    name: http
