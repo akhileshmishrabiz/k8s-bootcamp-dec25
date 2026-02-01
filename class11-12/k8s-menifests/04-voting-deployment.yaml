@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: voting-config
-  namespace: craftista
+  namespace: craftica
 data:
   application.properties: |
     # Catalogue Service Endpoint
