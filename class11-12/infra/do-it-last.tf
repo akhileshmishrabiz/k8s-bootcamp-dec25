@@ -15,7 +15,7 @@ data "kubernetes_ingress_v1" "app_ingress_status" {
 # cretae a route for subdomain -> ALB (aftr ingress is created in k8s)
 resource "aws_route53_record" "app" {
   zone_id = data.aws_route53_zone.public.zone_id
-  name    = "*.${var.environment}.${data.aws_route53_zone.public.name}"
+  name    = "*.${var.environment}.${var.app_name}.${data.aws_route53_zone.public.name}"
   type    = "A"
 
   alias {

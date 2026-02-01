@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: voting
+  name: recommendation
   namespace: argocd
 
 spec:

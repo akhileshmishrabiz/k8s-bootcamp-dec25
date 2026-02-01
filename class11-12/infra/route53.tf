@@ -8,7 +8,7 @@ data "aws_route53_zone" "public" {
 
 
 resource "aws_acm_certificate" "cert" {
-  domain_name       = "*.${var.environment}.${data.aws_route53_zone.public.name}"
+  domain_name       = "*.${var.environment}.${var.app_name}.${data.aws_route53_zone.public.name}"
   validation_method = "DNS"
 
   tags = {
