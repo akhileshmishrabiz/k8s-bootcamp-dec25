@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: recco
-        image: livingdevopswithakhilesh/craftista:recommendation-9ce2a27f66c068ec12c2b0d14cf79014686d2cad
+        image: 879381241087.dkr.ecr.ap-south-1.amazonaws.com/prod-craftica-recco:latest
         ports:
         - containerPort: 8080
           name: http

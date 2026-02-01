@@ -19,3 +19,10 @@ resource "aws_ecr_repository" "images" {
 # [id=879381241087.dkr.ecr.ap-south-1.amazonaws.com/prod-craftica-catalogue]
 # [id=879381241087.dkr.ecr.ap-south-1.amazonaws.com/prod-craftica-voting]
 # [id=879381241087.dkr.ecr.ap-south-1.amazonaws.com/prod-craftica-recco]
+
+
+# frontend.prod.akhileshmishra.tech
+# catalogue.prod.akhileshmishra.tech
+# voting.prod.akhileshmishra.tech
+# recco.prod.akhileshmishra.tech
+# *.prod.akhileshmishra.tech
