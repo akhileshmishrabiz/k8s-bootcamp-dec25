@@ -29,4 +29,3 @@ resource "aws_route53_record" "app" {
     data.kubernetes_ingress_v1.app_ingress_status
   ]
 }
-
