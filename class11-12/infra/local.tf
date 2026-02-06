@@ -4,7 +4,7 @@ locals {
       name        = "frontend",
       port        = "80"
       target_port = "3000"
-      host        = "${var.environment}.${var.app_name}.${var.domain}"
+      host        = "frontend.${var.environment}.${var.app_name}.${var.domain}"
     },
     {
       name        = "catalogue"

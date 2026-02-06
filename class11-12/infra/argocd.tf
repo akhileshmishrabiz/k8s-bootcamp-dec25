@@ -61,6 +61,7 @@ resource "helm_release" "argocd" {
       # Group name - all ingresses with the same group share a single ALB
       "alb.ingress.kubernetes.io/group.name" = "shared-alb"
     }
+
   }
 
   spec {
@@ -70,15 +71,14 @@ resource "helm_release" "argocd" {
     # TLS configuration
     tls {
       hosts = [
-        "argocd.${var.app_name}.${var.domain}"
+        "argocd.${var.environment}.${var.app_name}.${var.domain}"
       ]
       # cert-manager will automatically create this secret
-      secret_name = "argocd-tls-secret"
     }
 
     # Routing rule for ArgoCD UI
     rule {
-      host = "argocd.${var.app_name}.${var.domain}"
+      host = "argocd.${var.environment}.${var.app_name}.${var.domain}"
 
       http {
         path {
