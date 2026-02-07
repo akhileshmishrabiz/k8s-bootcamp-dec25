@@ -117,7 +117,7 @@ jobs:
           git add ${{ env.menifest_path }}/*.yaml
           git diff --staged --quiet || git commit -m "Update ${{ matrix.service.name }} image to ${{ github.sha }} tag"
           git pull --rebase origin ${{ env.environment_branch }}
-          git push origin ${{ env.environment_branch }}
+          git push --force origin ${{ env.environment_branch }}
 
       - name: Summary
         run: |
