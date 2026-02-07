@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: catalogue
-        image: 879381241087.dkr.ecr.ap-south-1.amazonaws.com/prod-craftica-catalogue:latest
+        image: 879381241087.dkr.ecr.ap-south-1.amazonaws.com/prod-craftica-catalogue:56cd6402bd532c8bb0046201cc28e4a41401d4a4
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
