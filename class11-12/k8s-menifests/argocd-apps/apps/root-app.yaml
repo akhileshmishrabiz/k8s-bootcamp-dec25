@@ -7,7 +7,8 @@ spec:
   project: default
   source:
     repoURL: https://github.com/akhileshmishrabiz/k8s-bootcamp-dec25.git
-    targetRevision: main
+    targetRevision: prod
+    # targetRevision: main --- IGNORE ---
     path: class11-12/k8s-menifests/argocd-apps
     directory:
       recurse: true
