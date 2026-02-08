@@ -1,5 +1,5 @@
 module "eks" {
-  count =  var.if_eks_needed ? 1 : 0
+  count   = var.if_eks_needed ? 1 : 0
   source  = "terraform-aws-modules/eks/aws"
   version = "21.5.0"
 
@@ -12,8 +12,8 @@ module "eks" {
     vpc-cni = {
       before_compute = true
     }
-     aws-ebs-csi-driver = {
-      service_account_role_arn    = aws_iam_role.ebs_csi_driver.arn
+    aws-ebs-csi-driver = {
+      service_account_role_arn = aws_iam_role.ebs_csi_driver.arn
       # addon_version               = "v1.37.0-eksbuild.1"
       resolve_conflicts_on_create = "OVERWRITE"
       resolve_conflicts_on_update = "PRESERVE"

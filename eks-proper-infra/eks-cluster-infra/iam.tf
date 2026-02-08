@@ -1,6 +1,10 @@
+# ============================================================================
+# IAM Role for EBS CSI Driver
+# ============================================================================
+
 # IAM Role for EBS CSI Driver
 resource "aws_iam_role" "ebs_csi_driver" {
-  name = "${var.environment}-${var.prefix}-ebs-csi-driver"
+  name = "${var.prefix}-${var.environment}-ebs-csi-driver"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -8,13 +12,13 @@ resource "aws_iam_role" "ebs_csi_driver" {
       {
         Effect = "Allow"
         Principal = {
-          Federated = module.eks.oidc_provider_arn
+          Federated = module.eks[0].oidc_provider_arn
         }
         Action = "sts:AssumeRoleWithWebIdentity"
         Condition = {
           StringEquals = {
-            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub" = "system:serviceaccount:kube-system:ebs-csi-controller-sa"
-            "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:aud" = "sts.amazonaws.com"
+            "${replace(module.eks[0].cluster_oidc_issuer_url, "https://", "")}:sub" = "system:serviceaccount:kube-system:ebs-csi-controller-sa"
+            "${replace(module.eks[0].cluster_oidc_issuer_url, "https://", "")}:aud" = "sts.amazonaws.com"
           }
         }
       }
