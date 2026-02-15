@@ -26,7 +26,7 @@ resource "helm_release" "argocd" {
 }
 
 
- resource "kubernetes_ingress_v1" "argocd" {
+resource "kubernetes_ingress_v1" "argocd" {
   metadata {
     name      = "argocd-server-ingress"
     namespace = "argocd"
@@ -98,4 +98,4 @@ resource "helm_release" "argocd" {
       }
     }
   }
- }
+}

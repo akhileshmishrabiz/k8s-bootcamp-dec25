@@ -19,8 +19,8 @@ resource "aws_route53_record" "app" {
   type    = "A"
 
   alias {
-    name                   = data.kubernetes_ingress_v1.app_ingress_status.status[0].load_balancer[0].ingress[0].hostname
-    zone_id                = "ZP97RAFLXTNZK" # ap-south-1 ALB zone ID
+    name    = data.kubernetes_ingress_v1.app_ingress_status.status[0].load_balancer[0].ingress[0].hostname
+    zone_id = "ZP97RAFLXTNZK" # ap-south-1 ALB zone ID
 
     evaluate_target_health = true
   }

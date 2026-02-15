@@ -42,12 +42,12 @@ variable "subnet_cidr" {
 
 
 variable "eks_cluster_name" {
-  type = string
+  type    = string
   default = "ekscluster"
 }
 
 variable "prefix" {
-  type = string
+  type    = string
   default = "dec"
 }
 

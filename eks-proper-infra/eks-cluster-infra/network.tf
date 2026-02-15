@@ -17,7 +17,7 @@ module "vpc" {
 
   tags = {
     Terraform   = "true"
-    Environment =  var.environment
+    Environment = var.environment
     repo        = "k8s-bootcamp-dec25"
   }
   enable_dns_hostnames = true
@@ -26,12 +26,12 @@ module "vpc" {
   # Required tags for EKS cluster subnet discovery
   public_subnet_tags = {
     "kubernetes.io/cluster/${var.environment}-${var.prefix}-${var.eks_cluster_name}" = "shared"
-    "kubernetes.io/role/elb"                     = "1"
+    "kubernetes.io/role/elb"                                                         = "1"
   }
 
   private_subnet_tags = {
     "kubernetes.io/cluster/${var.environment}-${var.prefix}-${var.eks_cluster_name}" = "shared"
-    "kubernetes.io/role/internal-elb"            = "1"
+    "kubernetes.io/role/internal-elb"                                                = "1"
   }
 }
 

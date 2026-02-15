@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: 879381241087.dkr.ecr.ap-south-1.amazonaws.com/prod-craftica-frontend:latest
+        image: 879381241087.dkr.ecr.ap-south-1.amazonaws.com/prod-craftica-frontend:v.1.1:$new_tag
         ports:
         - containerPort: 3000
           name: http

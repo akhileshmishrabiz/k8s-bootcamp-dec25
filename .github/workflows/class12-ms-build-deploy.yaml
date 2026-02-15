@@ -1,3 +1,4 @@
+---
 name: class12 ms build and deploy
 
 on:
@@ -10,6 +11,7 @@ on:
 env:
   AWS_REGION: ap-south-1
   ECR_REGISTRY: 879381241087.dkr.ecr.ap-south-1.amazonaws.com
+  environment_branch: prod
 
 jobs:
   build-and-push:
@@ -32,79 +34,93 @@ jobs:
             ecr_repo: prod-craftica-recco
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout code
+        uses: actions/checkout@v4
+        # with:
+        #   token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v5
-      with:
-        role-to-assume: arn:aws:iam::879381241087:role/eks-github-actions-build-role
-        role-session-name: GitHub_to_AWS_OIDC_MS
-        aws-region: ${{ env.AWS_REGION }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::879381241087:role/eks-github-actions-build-role
+          role-session-name: GitHub_to_AWS_OIDC_MS
+          aws-region: ${{ env.AWS_REGION }}
 
-    - name: Login to Amazon ECR
-      uses: aws-actions/amazon-ecr-login@v2
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
 
-    - name: Generate image tag
-      id: image-tag
-      run: |
-        SHORT_SHA=${GITHUB_SHA::8}
-        IMAGE_TAG="v$(date +%Y%m%d)-${SHORT_SHA}"
-        echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
-        echo "Generated image tag: ${IMAGE_TAG}"
+      - name: Build and push ${{ matrix.service.name }}
+        uses: docker/build-push-action@v5
+        with:
+          context: ./class11-12/app/${{ matrix.service.name }}
+          file: ./class11-12/app/${{ matrix.service.name }}/Dockerfile
+          push: true
+          tags: |
+            ${{ env.ECR_REGISTRY }}/${{ matrix.service.ecr_repo }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-    - name: Build and push ${{ matrix.service.name }}
-      uses: docker/build-push-action@v5
-      with:
-        context: ./class11-12/app/${{ matrix.service.name }}
-        file: ./class11-12/app/${{ matrix.service.name }}/Dockerfile
-        push: true
-        tags: |
-          ${{ env.ECR_REGISTRY }}/${{ matrix.service.ecr_repo }}:${{ steps.image-tag.outputs.image_tag }}
-          ${{ env.ECR_REGISTRY }}/${{ matrix.service.ecr_repo }}:latest
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
 
-    # - name: Update Kubernetes deployment manifest
-    #   run: |
-    #     # Map service names to deployment files
-    #     case "${{ matrix.service.name }}" in
-    #       frontend)
-    #         DEPLOY_FILE="02-frontend-deployment.yaml"
-    #         ;;
-    #       catalogue)
-    #         DEPLOY_FILE="03-catalogue-deployment.yaml"
-    #         ;;
-    #       voting)
-    #         DEPLOY_FILE="04-voting-deployment.yaml"
-    #         ;;
-    #       recommendation)
-    #         DEPLOY_FILE="05-recommendation-deployment.yaml"
-    #         ;;
-    #     esac
+  argo-deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
 
-    #     # Update the image in the deployment file
-    #     sed -i "s|image:.*${{ matrix.service.name }}.*|image: ${{ env.ECR_REGISTRY }}/${{ matrix.service.ecr_repo }}:${{ steps.image-tag.outputs.image_tag }}|g" \
-    #       ./class28-29/microservices-on-k8s/k8s-menifest-adv/${DEPLOY_FILE}
+    env:
+      menifest_path: class11-12/k8s-menifests
 
-    #     echo "Updated ${DEPLOY_FILE} with new image tag"
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - name: frontend
+            menifest: 02-frontend-deployment.yaml
+            ecr_repo: prod-craftica-frontend
+          - name: catalogue
+            menifest: 03-catalogue-deployment.yaml
+            ecr_repo: prod-craftica-catalogue
+          - name: voting
+            menifest: 04-voting-deployment.yaml
+            ecr_repo: prod-craftica-voting
+          - name: recommendation
+            menifest: 05-recommendation-deployment.yaml
+            ecr_repo: prod-craftica-recco
 
-    # - name: Commit and push updated manifests
-    #   run: |
-    #     git config --global user.name "github-actions[bot]"
-    #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
-    #     git add class28-29/microservices-on-k8s/k8s-menifest-adv/*.yaml
-    #     git diff --staged --quiet || git commit -m "Update ${{ matrix.service.name }} image to ${{ steps.image-tag.outputs.image_tag }}"
-    #     git pull --rebase origin main
-    #     git push
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # repository: akhileshmishrabiz/k8s-bootcamp-dec25
+          ref: prod
+          # token: ${{ secrets.GITHUB_TOKEN }}
 
-    # - name: Summary
-    #   run: |
-    #     echo " Built and pushed ${{ matrix.service.name }}" >> $GITHUB_STEP_SUMMARY
-    #     echo "Image: ${{ env.ECR_REGISTRY }}/${{ matrix.service.ecr_repo }}:${{ steps.image-tag.outputs.image_tag }}" >> $GITHUB_STEP_SUMMARY
-    #     echo "Updated deployment manifest with new image" >> $GITHUB_STEP_SUMMARY
+
+      - name: Update Kubernetes deployment manifest
+        run: |
+
+          # Update the image in the deployment file
+          sed -i "s|image:.*${{ matrix.service.name }}.*|image: ${{ env.ECR_REGISTRY }}/${{ matrix.service.ecr_repo }}:${{ github.sha }}|g" \
+            ./${{ env.menifest_path }}/${{ matrix.service.menifest }}
+
+          echo "Updated ${{ matrix.service.menifest }} with new image tag -> ${{ github.sha }}"
+          echo "Image: ${{ env.ECR_REGISTRY }}/${{ matrix.service.ecr_repo }}:${{ github.sha }}"
+
+      - name: Commit and push updated manifests
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add ${{ env.menifest_path }}/*.yaml
+          git diff --staged --quiet || git commit -m "Update ${{ matrix.service.name }} image to ${{ github.sha }} tag"
+          git pull --rebase origin ${{ env.environment_branch }}
+          git push --force origin ${{ env.environment_branch }}
+
+      - name: Summary
+        run: |
+          echo " Built and pushed ${{ matrix.service.name }}" >> $GITHUB_STEP_SUMMARY
+          echo "Image: ${{ env.ECR_REGISTRY }}/${{ matrix.service.ecr_repo }}:${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "Updated deployment manifest with new image" >> $GITHUB_STEP_SUMMARY

@@ -1,7 +1,7 @@
 resource "kubernetes_service" "services" {
   for_each = local.services
   metadata {
-    name = each.key
+    name      = each.key
     namespace = var.app_name
   }
   spec {
@@ -9,6 +9,7 @@ resource "kubernetes_service" "services" {
       app = each.key
     }
     port {
+      name        = "http"
       port        = each.value.port
       target_port = each.value.target_port
     }
@@ -17,7 +18,7 @@ resource "kubernetes_service" "services" {
   }
 }
 
- resource "kubernetes_ingress_v1" "ms" {
+resource "kubernetes_ingress_v1" "ms" {
   for_each = local.services
   metadata {
     name      = "${each.key}-ingress"
@@ -88,4 +89,4 @@ resource "kubernetes_service" "services" {
       }
     }
   }
- }
+}
