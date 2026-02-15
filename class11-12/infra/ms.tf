@@ -9,6 +9,7 @@ resource "kubernetes_service" "services" {
       app = each.key
     }
     port {
+      name        = "http"
       port        = each.value.port
       target_port = each.value.target_port
     }
