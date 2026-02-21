@@ -51,6 +51,7 @@ resource "aws_security_group" "rds_sg" {
   }
 }
 
+
 # RDS PostgreSQL Instance
 # checkov:skip=CKV2_AWS_30:too costly dont need it
 resource "aws_db_instance" "postgres" {
