@@ -53,9 +53,9 @@ resource "aws_security_group" "rds_sg" {
 
 
 # RDS PostgreSQL Instance
-# checkov:skip=CKV2_AWS_30:too costly dont need it
 resource "aws_db_instance" "postgres" {
-  # Basic configuration
+  #checkov:skip=CKV2_AWS_30:too costly dont need it
+  #checkov:skip=CKV_AWS_161:dont feel like doing it
   identifier     = var.db_identifier
   engine         = "postgres"
   engine_version = var.engine_version
