@@ -7,7 +7,7 @@ metadata:
     app: catalogue
     tier: backend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: catalogue
@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: catalogue
-        image: 879381241087.dkr.ecr.ap-south-1.amazonaws.com/prod-craftica-catalogue:latest
+        image: 879381241087.dkr.ecr.ap-south-1.amazonaws.com/prod-craftica-catalogue:36632c4a4645554930bf5c44a38c4f5f5fbf8b91
         imagePullPolicy: Always
         ports:
         - containerPort: 5000

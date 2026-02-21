@@ -7,7 +7,7 @@ metadata:
     app: frontend
     tier: frontend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: frontend
@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: 879381241087.dkr.ecr.ap-south-1.amazonaws.com/prod-craftica-frontend:v.1.1:$new_tag
+        image: 879381241087.dkr.ecr.ap-south-1.amazonaws.com/prod-craftica-frontend:36632c4a4645554930bf5c44a38c4f5f5fbf8b91
         ports:
         - containerPort: 3000
           name: http
