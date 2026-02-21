@@ -1,0 +1,50 @@
+# manual deplopy -> multi-env deployment workflow for EKS
+name: devsecops Infra
+
+on:
+  pull_request:
+    branches:
+      - main
+  
+env:
+  TF_VERSION: 1.8.1
+  AWS_REGION: ap-south-1
+  infra_path: devsecops/infra
+  
+
+jobs:
+  infra-deploy:
+    name: infra deploy
+    runs-on: ubuntu-latest   
+    permissions:
+      id-token: write
+      contents: read   
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Checkov GitHub Action
+        uses: bridgecrewio/checkov-action@v12
+
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v5
+      #   with:
+      #     role-to-assume: arn:aws:iam::879381241087:role/eks-github-actions-build-role
+      #     role-session-name: GitHub_to_AWS_OIDC_EKSDEP
+      #     aws-region: ${{ env.AWS_REGION }}
+
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v3
+      #   with:
+      #     terraform_version: ${{ env.TF_VERSION }}
+
+      # - name: Terraform Init
+      #   working-directory: ${{ env.infra_path }}
+      #   run: terraform init 
+
+      # - name: Terraform plan
+      #   working-directory: ${{ env.infra_path }}
+      #   run: terraform plan 
+
+     
