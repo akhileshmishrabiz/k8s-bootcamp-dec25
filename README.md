@@ -11,6 +11,3 @@ postgresql://postgres:3drFnRM8D9@bootcampclass5-dev-devopsdozo.cvik8accw2tk.ap-s
  psql -h bootcampclass5-dev-devopsdozo.cvik8accw2tk.ap-south-1.rds.amazonaws.com -d postgres -U postgres
 
 
-
-
- api_key_dummy="asdfghjksfqwfweqfsffsfsf"
