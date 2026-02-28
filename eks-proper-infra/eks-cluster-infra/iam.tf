@@ -29,6 +29,8 @@ resource "aws_iam_role" "ebs_csi_driver" {
     Environment = var.environment
     ManagedBy   = "Terraform"
   }
+
+  depends_on = [ module.eks ]
 }
 
 # Attach AWS managed policy for EBS CSI Driver
