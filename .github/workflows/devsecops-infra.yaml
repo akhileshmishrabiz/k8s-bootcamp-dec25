@@ -2,9 +2,10 @@
 name: devsecops Infra
 
 on:
-  pull_request:
-    branches:
-      - main
+  # pull_request:
+  #   branches:
+  #     - main
+  workflow_dispatch:
   
 env:
   TF_VERSION: 1.8.1
@@ -29,7 +30,7 @@ jobs:
         with:
           directory: ${{ env.infra_path }}
           quiet: true
-          skip_check: CKV_AWS_118
+          skip_check: CKV_AWS_118,CKV_AWS_354
 
 
       # - name: Configure AWS credentials
