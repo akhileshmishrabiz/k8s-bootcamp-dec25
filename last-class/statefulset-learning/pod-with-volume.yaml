@@ -1,0 +1,33 @@
+# pod with volume
+# to get volume, we need to create PVC (persistant volume claim) and then pod will claim that PVC 
+# pod will claim volume via PVC (persistant volume claim)
+
+# pvc will claim PV (persistant volume) and then pod will claim that PV via PVC (persistant volume claim)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: gp2  
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  containers:
+    - name: my-container
+      image: nginx
+      volumeMounts:
+        - name: my-volume
+          mountPath: /usr/share/nginx/html
+  volumes:
+    - name: my-volume
+      persistentVolumeClaim:
+        claimName: my-pvc
