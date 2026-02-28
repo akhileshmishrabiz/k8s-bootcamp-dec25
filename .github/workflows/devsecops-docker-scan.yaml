@@ -1,10 +1,11 @@
 name: calss4 Build and Push to ECR
 
 on:
-  pull_request:
-    branches:
-      - main
+  # pull_request:
+  #   branches:
+  #     - main
 
+  workflow_dispatch:
 env:
   AWS_REGION: ap-south-1
   IMAGE_TAG: ${{ github.sha }}
@@ -31,5 +32,5 @@ jobs:
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
-          # 
+          # severity: 'CRITICAL,HIGH'
           severity: 'CRITICAL'
