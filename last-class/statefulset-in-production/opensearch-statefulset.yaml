@@ -1,0 +1,172 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: opensearch-cluster
+  labels:
+    app: opensearch
+spec:
+  clusterIP: None
+  ports:
+  - port: 9200
+    name: http
+  - port: 9300
+    name: transport
+  selector:
+    app: opensearch
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opensearch
+  labels:
+    app: opensearch
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 9200
+    name: http
+    targetPort: 9200
+  selector:
+    app: opensearch
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opensearch-config
+data:
+  opensearch.yml: |
+    cluster.name: opensearch-cluster
+    network.host: 0.0.0.0
+
+    # Cluster settings
+    cluster.initial_master_nodes:
+      - opensearch-0
+      - opensearch-1
+      - opensearch-2
+
+    discovery.seed_hosts:
+      - opensearch-0.opensearch-cluster
+      - opensearch-1.opensearch-cluster
+      - opensearch-2.opensearch-cluster
+
+    # Security settings
+    plugins.security.disabled: false
+    plugins.security.ssl.http.enabled: false
+    plugins.security.ssl.transport.enabled: false
+    plugins.security.allow_default_init_securityindex: true
+
+    # Performance settings
+    bootstrap.memory_lock: true
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: opensearch
+spec:
+  serviceName: opensearch-cluster
+  replicas: 3
+  selector:
+    matchLabels:
+      app: opensearch
+  template:
+    metadata:
+      labels:
+        app: opensearch
+    spec:
+      initContainers:
+      - name: init-sysctl
+        image: busybox:1.35
+        command:
+        - sh
+        - -c
+        - |
+          sysctl -w vm.max_map_count=262144
+          ulimit -n 65536
+          ulimit -l unlimited
+        securityContext:
+          privileged: true
+      - name: fix-permissions
+        image: busybox:1.35
+        command:
+        - sh
+        - -c
+        - chown -R 1000:1000 /usr/share/opensearch/data
+        volumeMounts:
+        - name: opensearch-data
+          mountPath: /usr/share/opensearch/data
+        securityContext:
+          privileged: true
+      containers:
+      - name: opensearch
+        image: opensearchproject/opensearch:2.11.1
+        ports:
+        - containerPort: 9200
+          name: http
+        - containerPort: 9300
+          name: transport
+        env:
+        - name: cluster.name
+          value: "opensearch-cluster"
+        - name: node.name
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: discovery.seed_hosts
+          value: "opensearch-0.opensearch-cluster,opensearch-1.opensearch-cluster,opensearch-2.opensearch-cluster"
+        - name: cluster.initial_master_nodes
+          value: "opensearch-0,opensearch-1,opensearch-2"
+        - name: OPENSEARCH_JAVA_OPTS
+          value: "-Xms2g -Xmx2g"
+        - name: DISABLE_INSTALL_DEMO_CONFIG
+          value: "true"
+        - name: DISABLE_SECURITY_PLUGIN
+          value: "false"
+        - name: bootstrap.memory_lock
+          value: "true"
+        resources:
+          requests:
+            memory: "3Gi"
+            cpu: "1000m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        volumeMounts:
+        - name: opensearch-data
+          mountPath: /usr/share/opensearch/data
+        - name: opensearch-config
+          mountPath: /usr/share/opensearch/config/opensearch.yml
+          subPath: opensearch.yml
+        livenessProbe:
+          tcpSocket:
+            port: 9200
+          initialDelaySeconds: 90
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /_cluster/health?local=true
+            port: 9200
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        securityContext:
+          capabilities:
+            add:
+            - IPC_LOCK
+            - SYS_RESOURCE
+      volumes:
+      - name: opensearch-config
+        configMap:
+          name: opensearch-config
+  volumeClaimTemplates:
+  - metadata:
+      name: opensearch-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: ebs-sc
+      resources:
+        requests:
+          storage: 50Gi

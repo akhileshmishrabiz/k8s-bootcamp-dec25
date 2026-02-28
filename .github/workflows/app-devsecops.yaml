@@ -1,0 +1,119 @@
+name: App DevSecOps Pipeline
+
+on:
+  push:
+    branches: [ main, devsecops-infra-scan ]
+
+  pull_request:
+    branches: [ main ]
+  
+
+env:
+  APP_PATH: devsecops/app
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/task-management-app
+
+jobs:
+  lint:
+    name: Lint with Ruff
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: '${{ env.APP_PATH }}/requirements.txt'
+
+      - name: Install dependencies
+        run: |
+          cd ${{ env.APP_PATH }}
+          pip install --upgrade pip
+          pip install ruff
+
+      - name: Run Ruff linter
+        run: |
+          cd ${{ env.APP_PATH }}
+          ruff check . --output-format=github
+
+      - name: Run Ruff formatter check
+        run: |
+          cd ${{ env.APP_PATH }}
+          ruff format --check .
+
+  test:
+    name: Test with Pytest
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: '${{ env.APP_PATH }}/requirements.txt'
+
+      - name: Install dependencies
+        run: |
+          cd ${{ env.APP_PATH }}
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+          python test_app.py
+
+     
+  codeql:
+    name: CodeQL Security Scan
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'python' ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: +security-and-quality
+          setup-python-dependencies: true
+          source-root: ${{ env.APP_PATH }}
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
+          upload: true
+
+  
